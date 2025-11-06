@@ -1,13 +1,56 @@
-INFO:     Started server process [110093]
+INFO:     Started server process [177824]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
-INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     127.0.0.1:39502 - "POST /api/auth/login HTTP/1.1" 200 OK
-INFO:     127.0.0.1:39502 - "OPTIONS /api/images/my-images HTTP/1.1" 200 OK
-INFO:     127.0.0.1:39502 - "OPTIONS /api/images/my-images HTTP/1.1" 200 OK
-INFO:     127.0.0.1:39506 - "GET /api/images/my-images HTTP/1.1" 200 OK
-INFO:     127.0.0.1:39502 - "GET /api/images/my-images HTTP/1.1" 200 OK
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [110093]
+ERROR:    [Errno 98] error while attempting to bind on address ('0.0.0.0INFO:     127.0.0.1:56914 - "OPTIONS /api/images/my-images HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56924 - "OPTIONS /api/images/my-images HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56924 - "GET /api/images/my-images HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:56914 - "GET /api/images/my-images HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:56924 - "OPTIONS /api/images/other-users-images HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56914 - "OPTIONS /api/images/other-users-images HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56924 - "GET /api/images/other-users-images HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:56914 - "GET /api/images/other-users-images HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:56924 - "GET /api/images/my-images HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:56914 - "GET /api/images/my-images HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:56914 - "GET /api/images/other-users-images HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:56924 - "GET /api/images/other-users-images HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:56914 - "GET /api/images/my-images HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:56924 - "GET /api/images/my-images HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:56924 - "GET /api/images/other-users-images HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:56914 - "GET /api/images/other-users-images HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:56924 - "GET /api/images/my-images HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:56914 - "GET /api/images/my-images HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:50478 - "OPTIONS /api/images/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50478 - "POST /api/images/ HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:50478 - "GET /api/images/my-images HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:50484 - "GET /api/images/my-images HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:39306 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39306 - "GET /api/images/my-images HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39308 - "GET /api/images/my-images HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39306 - "GET /api/images/other-users-images HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39308 - "GET /api/images/other-users-images HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39308 - "OPTIONS /api/images/2/file HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39306 - "OPTIONS /api/images/2/file HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39308 - "GET /api/images/2/file HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39306 - "GET /api/images/2/file HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56368 - "GET /api/images/my-images HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56380 - "GET /api/images/my-images HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46836 - "POST /api/images/ HTTP/1.1" 201 Created
+INFO:     127.0.0.1:46836 - "GET /api/images/my-images HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46836 - "OPTIONS /api/images/3/file HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46836 - "GET /api/images/3/file HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59026 - "GET /api/images/other-users-images HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59036 - "GET /api/images/other-users-images HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59026 - "GET /api/images/2/file HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59036 - "GET /api/images/2/file HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59026 - "GET /api/images/my-images HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59036 - "GET /api/images/my-images HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59026 - "GET /api/images/3/file HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59036 - "GET /api/images/3/file HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59026 - "GET /api/images/other-users-images HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59036 - "GET /api/images/other-users-images HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59026 - "GET /api/images/2/file HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59036 - "GET /api/images/2/file HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59026 - "GET /api/images/my-images HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59036 - "GET /api/images/my-images HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59026 - "GET /api/images/3/file HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59036 - "GET /api/images/3/file HTTP/1.1" 200 OK

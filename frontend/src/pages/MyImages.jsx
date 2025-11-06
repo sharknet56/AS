@@ -8,6 +8,7 @@ function MyImages() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingImage, setEditingImage] = useState(null);
+  const [imageUrls, setImageUrls] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,6 +19,17 @@ function MyImages() {
     try {
       const data = await imageService.getMyImages();
       setImages(data);
+      
+      // Load image URLs
+      const urls = {};
+      for (const image of data) {
+        try {
+          urls[image.id] = await imageService.getImageFile(image.id);
+        } catch (err) {
+          console.error(`Error loading image ${image.id}:`, err);
+        }
+      }
+      setImageUrls(urls);
     } catch (err) {
       console.error('Error fetching images:', err);
     } finally {
@@ -69,11 +81,17 @@ function MyImages() {
         <div className="images-grid">
           {images.map((image) => (
             <div key={image.id} className="image-card" onClick={() => handleImageClick(image.id)}>
-              <img
-                src={imageService.getImageFile(image.id)}
-                alt={image.title}
-                className="image-card-img"
-              />
+              {imageUrls[image.id] ? (
+                <img
+                  src={imageUrls[image.id]}
+                  alt={image.title}
+                  className="image-card-img"
+                />
+              ) : (
+                <div className="image-card-img" style={{display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f0f0f0'}}>
+                  Loading...
+                </div>
+              )}
               <div className="image-card-content">
                 <h3 className="image-card-title">{image.title}</h3>
                 <p className="image-card-description">{image.description || 'No description'}</p>

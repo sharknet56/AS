@@ -65,9 +65,17 @@ export const imageService = {
     return response.data;
   },
 
-  getImageFile: (imageId) => {
+  getImageFile: async (imageId) => {
+    const response = await api.get(`/images/${imageId}/file`, {
+      responseType: 'blob'
+    });
+    return URL.createObjectURL(response.data);
+  },
+
+  getImageFileUrl: (imageId) => {
+    // This returns a URL with the token in the header via the API instance
     const token = localStorage.getItem('token');
-    return `${API_BASE_URL}/images/${imageId}/file?token=${token}`;
+    return `${API_BASE_URL}/images/${imageId}/file?_t=${Date.now()}`;
   },
 
   uploadImage: async (title, description, file) => {

@@ -6,6 +6,7 @@ function ImageDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [image, setImage] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(true);
@@ -21,6 +22,10 @@ function ImageDetail() {
       const imageData = await imageService.getImage(id);
       setImage(imageData);
       setComments(imageData.comments || []);
+      
+      // Load image file
+      const url = await imageService.getImageFile(id);
+      setImageUrl(url);
     } catch (err) {
       console.error('Error fetching image:', err);
       alert('Error loading image');
@@ -70,11 +75,17 @@ function ImageDetail() {
   return (
     <div className="container">
       <div className="image-detail-container">
-        <img
-          src={imageService.getImageFile(image.id)}
-          alt={image.title}
-          className="image-detail-img"
-        />
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={image.title}
+            className="image-detail-img"
+          />
+        ) : (
+          <div className="image-detail-img" style={{display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f0f0f0', minHeight: '400px'}}>
+            Loading image...
+          </div>
+        )}
 
         <div className="image-detail-info">
           <h2>{image.title}</h2>
