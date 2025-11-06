@@ -99,7 +99,7 @@ echo "00000000: ffd8 xxxx xxxx xxxx xxxx ...  (starts with FFD8)"
 echo ""
 
 echo "Expected for PNG (plaintext):"
-echo "00000000: 8950 4e47 0d0a 1a0a ...  (starts with 89504E47)"
+echo "00000000: 8950 xxxx xxxx xxxx ...  (starts with 89504E47)"
 echo ""
 
 echo "Expected for Fernet encrypted:"
