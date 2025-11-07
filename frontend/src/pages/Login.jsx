@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authService } from '../services/api';
+import { useGoogleLogin } from '@react-oauth/google';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -8,6 +9,14 @@ function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const googleLogin = useGoogleLogin({
+    flow: "auth-code",
+    onSuccess: async (codeResponse) => {
+      await authService.getUserInfo(codeResponse);
+      navigate('/my-images');
+    },
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,7 +69,37 @@ function Login() {
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
+        <div style={{ margin: '20px 0', textAlign: 'center' }}>
+          <span style={{ display: 'block', marginBottom: '10px', color: '#666' }}>
+            OR
+          </span>
 
+          <button
+            type="button"
+            onClick={googleLogin}
+            className="btn btn-outline"
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              border: '1px solid #ccc',
+              backgroundColor: '#fff',
+              color: '#333',
+              borderRadius: '6px',
+              padding: '10px',
+              cursor: 'pointer',
+            }}
+          >
+            <img
+              src="https://developers.google.com/identity/images/g-logo.png"
+              alt="Google logo"
+              style={{ width: '18px', height: '18px' }}
+            />
+            <span>Sign in with Google</span>
+          </button>
+        </div>
         <div className="auth-link">
           Don't have an account? <Link to="/register">Register here</Link>
         </div>
