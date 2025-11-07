@@ -9,6 +9,7 @@ echo ""
 if [ ! -d "backend/venv" ]; then
     echo "📦 Creating Python virtual environment..."
     cd backend
+    cp .env.example .env
     python3 -m venv venv
     source venv/bin/activate
     echo "📥 Installing Python dependencies..."
