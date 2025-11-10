@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import Navbar from './components/Navbar';
 import PrivateRoute from './components/PrivateRoute';
 import Home from './pages/Home';
@@ -12,40 +13,42 @@ import './App.css';
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route
-            path="/my-images"
-            element={
-              <PrivateRoute>
-                <MyImages />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/explore"
-            element={
-              <PrivateRoute>
-                <Explore />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/image/:id"
-            element={
-              <PrivateRoute>
-                <ImageDetail />
-              </PrivateRoute>
-            }
-          />
-        </Routes>
-      </div>
-    </Router>
+    <GoogleOAuthProvider clientId="403171098781-bam4vs2bk05ar95icf7r2nlusjcnt2v4.apps.googleusercontent.com">
+      <Router>
+        <div className="App">
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route
+              path="/my-images"
+              element={
+                <PrivateRoute>
+                  <MyImages />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/explore"
+              element={
+                <PrivateRoute>
+                  <Explore />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/image/:id"
+              element={
+                <PrivateRoute>
+                  <ImageDetail />
+                </PrivateRoute>
+              }
+            />
+          </Routes>
+        </div>
+      </Router>
+    </GoogleOAuthProvider>
   );
 }
 

@@ -34,6 +34,18 @@ export const authService = {
     return response.data;
   },
 
+  //get user info from backend after user authenticate to google
+  getUserInfo: async (codeResponse) => {
+    const response = await api.post("/auth/google_login", {
+      code: codeResponse.code,
+    });
+    if (response.data.access_token) {
+      localStorage.setItem('token', response.data.access_token);
+      localStorage.setItem('username', response.data.username);
+    }
+    return response.data;
+  },
+
   logout: () => {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
