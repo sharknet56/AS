@@ -28,7 +28,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True, nullable=False)
-    hashed_password = Column(EncryptedType, nullable=False)
+    hashed_password = Column(EncryptedType, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     images = relationship("Image", back_populates="owner", cascade="all, delete-orphan")
