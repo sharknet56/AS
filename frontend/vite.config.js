@@ -7,12 +7,17 @@ import react from '@vitejs/plugin-react'
 const frontendCertPath = path.resolve(__dirname, '../certs/frontend/frontend.crt.pem')
 const frontendKeyPath = path.resolve(__dirname, '../certs/frontend/frontend.key.pem')
 const caCertPath = path.resolve(__dirname, '../certs/ca/cacert.pem')
+const frontendKeyPassphrase = '1234'
 
 const httpsOptions = (() => {
   const options = {
     cert: fs.readFileSync(frontendCertPath),
     key: fs.readFileSync(frontendKeyPath),
     ca: fs.readFileSync(caCertPath)
+  }
+
+  if (frontendKeyPassphrase) {
+    options.passphrase = frontendKeyPassphrase
   }
 
   return options

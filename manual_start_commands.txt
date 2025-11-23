@@ -6,7 +6,7 @@ Start backend (terminal 1):
         pip install -r requirements.txt
     else:
         source venv/bin/activate
-    uvicorn app.main:app --host 0.0.0.0 --port 8000 --ssl-certfile "$BACKEND_CERT_PATH" --ssl-keyfile "$BACKEND_KEY_PATH" --ssl-keyfile-password "$SSL_KEY_PASSPHRASE")
+    uvicorn app.main:app --host 0.0.0.0 --port 8000 --ssl-certfile "$BACKEND_CERT_PATH" --ssl-keyfile "$BACKEND_KEY_PATH" --ssl-keyfile-password "$SSL_KEY_PASSPHRASE"
 
 Start frontend (terminal 2)
     cd frontend
