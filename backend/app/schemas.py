@@ -1,13 +1,29 @@
-from pydantic import BaseModel, Field
-from typing import Optional, List
+import re
 from datetime import datetime
+from typing import List, Optional
+
+from pydantic import BaseModel, Field, field_validator
 
 # User Schemas
 class UserBase(BaseModel):
     username: str
 
 class UserCreate(UserBase):
-    password: str = Field(..., min_length=6)
+    password: str = Field(..., min_length=12)
+
+    @field_validator("password")
+    @classmethod
+    def password_strength(cls, value: str) -> str:
+        # Require uppercase, lowercase, digit, and special character for better entropy
+        if not re.search(r"[A-Z]", value):
+            raise ValueError("Password must include at least one uppercase letter")
+        if not re.search(r"[a-z]", value):
+            raise ValueError("Password must include at least one lowercase letter")
+        if not re.search(r"[0-9]", value):
+            raise ValueError("Password must include at least one digit")
+        if not re.search(r"[!@#$%^&*()_+\-=[\]{};':\"\\|,.<>/?`~]", value):
+            raise ValueError("Password must include at least one special character")
+        return value
 
 class User(UserBase):
     id: int
