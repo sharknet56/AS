@@ -75,6 +75,13 @@ npm run dev
 
 Frontend will be available at: http://localhost:3000
 
+## 🔑 Secrets Management
+
+- Run `./start.sh` to launch both services. On the first run, the script asks for a passphrase, generates `SECRET_KEY` and `ENCRYPTION_KEY`, and stores them encrypted in `backend/.secrets.enc`.
+- Keep the passphrase safe. Subsequent executions of `./start.sh` will prompt for the passphrase, decrypt the secrets, and export them to the environment before the backend starts.
+- The encrypted file is ignored by git; if you need to rotate the keys, delete `backend/.secrets.enc` and rerun `./start.sh` to create a fresh set.
+- When running the backend without `start.sh`, ensure `SECRET_KEY` and `ENCRYPTION_KEY` are set in the environment (decrypting the file manually or providing your own secrets).
+
 ## 📁 Project Structure
 
 ```

@@ -3,13 +3,7 @@ python3 -m venv venv
 source venv/bin/activate
 cp .env.example .env
 pip install -r requirements.txt
-
-# PUT THE RESULT WITH "" IN .env ENCRYPTION_KEY
-python3 -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
-
-# PUT THE RESULT WITH "" IN .env SECRET_KEY
-python3 -c "import secrets; print(secrets.token_urlsafe(32))"
-
+# Secrets are handled by start.sh. Delete backend/.secrets.enc to rotate them.
 uvicorn app.main:app --host 0.0.0.0 --port 8000
 
 cd frontend

@@ -3,6 +3,7 @@
 ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$ROOT_DIR"
 BACKEND_DIR="$ROOT_DIR/backend"
+SECRETS_FILE="$BACKEND_DIR/.secrets.enc"
 
 resolve_backend_path() {
     local value="$1"
@@ -11,6 +12,67 @@ resolve_backend_path() {
     else
         echo "$BACKEND_DIR/$value"
     fi
+}
+
+ensure_secrets_present() {
+    if [ -n "${SECRET_KEY:-}" ] && [ -n "${ENCRYPTION_KEY:-}" ]; then
+        return
+    fi
+
+    if ! command -v openssl >/dev/null 2>&1; then
+        echo "❌ openssl is required to manage encrypted secrets. Please install it and rerun."
+        exit 1
+    fi
+
+    local passphrase passphrase_confirm tmp_file
+    tmp_file="$(mktemp)"
+
+    if [ ! -f "$SECRETS_FILE" ]; then
+        echo "🔐 No encrypted secrets found. Initializing secure store..."
+        read -s -p "Create secrets passphrase: " passphrase
+        echo ""
+        read -s -p "Confirm secrets passphrase: " passphrase_confirm
+        echo ""
+        if [ "$passphrase" != "$passphrase_confirm" ]; then
+            echo "❌ Passphrases do not match. Aborting."
+            rm -f "$tmp_file"
+            exit 1
+        fi
+
+        python3 - <<'PY' > "$tmp_file"
+import base64
+import os
+import secrets
+
+secret_key = secrets.token_urlsafe(32)
+encryption_key = base64.urlsafe_b64encode(os.urandom(32)).decode()
+print(f'SECRET_KEY="{secret_key}"')
+print(f'ENCRYPTION_KEY="{encryption_key}"')
+PY
+
+        if ! openssl enc -aes-256-cbc -pbkdf2 -salt -in "$tmp_file" -out "$SECRETS_FILE" -pass pass:"$passphrase" >/dev/null 2>&1; then
+            echo "❌ Failed to encrypt secrets."
+            rm -f "$tmp_file"
+            exit 1
+        fi
+        echo "✅ Encrypted secrets stored at $SECRETS_FILE"
+    else
+        read -s -p "Enter secrets passphrase: " passphrase
+        echo ""
+        if ! openssl enc -d -aes-256-cbc -pbkdf2 -in "$SECRETS_FILE" -out "$tmp_file" -pass pass:"$passphrase" >/dev/null 2>&1; then
+            echo "❌ Failed to decrypt secrets. Check your passphrase."
+            rm -f "$tmp_file"
+            exit 1
+        fi
+    fi
+
+    set -a
+    # shellcheck disable=SC1090
+    source "$tmp_file"
+    set +a
+
+    rm -f "$tmp_file"
+    unset passphrase passphrase_confirm tmp_file
 }
 
 # Startup script for Image Sharing Application
@@ -52,6 +114,8 @@ set -a
 # shellcheck disable=SC1091
 source "$ENV_FILE"
 set +a
+
+ensure_secrets_present
 
 if [ -z "${SSL_BACKEND_CERT_PATH:-}" ] || [ -z "${SSL_BACKEND_KEY_PATH:-}" ]; then
     echo "❌ SSL_BACKEND_CERT_PATH and SSL_BACKEND_KEY_PATH must be set in backend/.env"

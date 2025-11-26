@@ -5,3 +5,4 @@ dist
 *.pid
 backend/.env
 backend/.env.local
+backend/.secrets.enc
