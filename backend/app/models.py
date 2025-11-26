@@ -28,7 +28,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True, nullable=False)
-    hashed_password = Column(EncryptedType, nullable=True)
+    hashed_password = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     images = relationship("Image", back_populates="owner", cascade="all, delete-orphan")
@@ -53,7 +53,7 @@ class Comment(Base):
     __tablename__ = "comments"
 
     id = Column(Integer, primary_key=True, index=True)
-    content = Column(String, nullable=False)
+    content = Column(EncryptedType, nullable=False)
     image_id = Column(Integer, ForeignKey("images.id"), nullable=False)
     author_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
