@@ -11,6 +11,11 @@ function ImageDetail() {
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(true);
   const [commentLoading, setCommentLoading] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editLoading, setEditLoading] = useState(false);
+  const [editError, setEditError] = useState('');
   const currentUsername = authService.getUsername();
 
   useEffect(() => {
@@ -22,6 +27,8 @@ function ImageDetail() {
       const imageData = await imageService.getImage(id);
       setImage(imageData);
       setComments(imageData.comments || []);
+      setEditTitle(imageData.title);
+      setEditDescription(imageData.description || '');
       
       // Load image file
       const url = await imageService.getImageFile(id);
@@ -59,6 +66,21 @@ function ImageDetail() {
       } catch (err) {
         alert('Error deleting image');
       }
+    }
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    setEditError('');
+    setEditLoading(true);
+    try {
+      await imageService.updateImage(id, editTitle, editDescription);
+      await fetchImageData();
+      setEditing(false);
+    } catch (err) {
+      setEditError(err.response?.data?.detail || 'Error updating image');
+    } finally {
+      setEditLoading(false);
     }
   };
 
@@ -101,9 +123,42 @@ function ImageDetail() {
             <button className="btn btn-secondary" onClick={() => navigate('/my-images')}>
               Back to My Images
             </button>
+            <button className="btn btn-primary" onClick={() => setEditing(!editing)}>
+              {editing ? 'Cancel Edit' : 'Edit Details'}
+            </button>
             <button className="btn btn-danger" onClick={handleDelete}>
               Delete Image
             </button>
+          </div>
+        )}
+
+        {isOwner && editing && (
+          <div className="image-edit-panel">
+            <h3>Edit Caption & Description</h3>
+            {editError && <div className="error-message">{editError}</div>}
+            <form onSubmit={handleEditSubmit}>
+              <div className="form-group">
+                <label htmlFor="editTitle">Caption</label>
+                <input
+                  id="editTitle"
+                  type="text"
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="editDescription">Description</label>
+                <textarea
+                  id="editDescription"
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                />
+              </div>
+              <button type="submit" className="btn btn-primary" disabled={editLoading}>
+                {editLoading ? 'Saving...' : 'Save Changes'}
+              </button>
+            </form>
           </div>
         )}
 
