@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Response
+from fastapi import APIRouter, Depends, HTTPException, status, Response, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from datetime import timedelta
@@ -6,6 +6,7 @@ from app.database import get_db
 from app.models import User
 from app.schemas import UserCreate, User as UserSchema, Token
 from app.security import verify_password, get_password_hash, create_access_token
+from app.rate_limit import check_login_not_blocked, register_failed_login
 from app.config import get_settings
 import requests
 from pydantic import BaseModel
@@ -43,17 +44,25 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=Token)
 def login(
+    request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
-    """
-    Login user and return JWT access token
-    """
+    """Login with JWT and simple rate limiting."""
+    client_ip = request.client.host if request.client else "unknown"
+
+    # Block if too many recent failed attempts
+    check_login_not_blocked(f"ip_failed:{client_ip}")
+    check_login_not_blocked(f"user_failed:{form_data.username}")
     # Find user by username
     user = db.query(User).filter(User.username == form_data.username).first()
     
     # Verify user exists and password is correct
     if not user or not verify_password(form_data.password, user.hashed_password):
+        # Count only failed attempts
+        register_failed_login(f"ip_failed:{client_ip}")
+        register_failed_login(f"user_failed:{form_data.username}")
+
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
