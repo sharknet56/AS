@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: image-sharing-backend
+    restart: always
+    env_file: .env
+    environment:
+      - DATABASE_URL=sqlite:////data/app.db
+    volumes:
+      - backend_data:/data
+    networks:
+      - app-network
+
+  frontend:
+    build: ./frontend
+    container_name: image-sharing-frontend
+    restart: always
+    ports:
+      - "443:443"
+      - "80:80"
+      - "3000:443"
+    volumes:
+      - ./certs/nginx:/etc/nginx/certs:ro
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  backend_data:
