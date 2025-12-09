@@ -1,70 +1,89 @@
-# Resumen de Cambios: Migración a Docker y Producción
+# Change Summary: Docker Migration and Production Setup
 
-Este documento resume las modificaciones realizadas para transformar el entorno de desarrollo local en una arquitectura de producción robusta y portable utilizando Docker.
+This document summarizes the modifications made to transform the local development environment into a robust and portable production architecture using Docker.
 
-## 🎯 Objetivo Principal
-El objetivo era crear una versión de producción de la aplicación que fuera fácil de desplegar, segura (HTTPS) y que no dependiera de servidores de desarrollo (como `vite dev`) para funcionar.
+## 🎯 Main Objective
+The goal was to create a production version of the application that is easy to deploy, secure (HTTPS), and does not rely on development servers (like `vite dev`) to function.
 
-## 🏗️ Cambios en la Arquitectura
+## 🏗️ Architecture Changes
 
-### Antes (Desarrollo)
-- **Frontend**: Ejecutado directamente con `npm run dev` (Vite).
-- **Backend**: Ejecutado directamente con Python/Uvicorn.
-- **HTTPS**: Gestionado individualmente por cada servicio con certificados locales.
+### Before (Development)
+- **Frontend**: Ran directly with `npm run dev` (Vite).
+- **Backend**: Ran directly with Python/Uvicorn.
+- **HTTPS**: Managed individually by each service with local certificates.
 
-### Ahora (Producción con Docker)
-Hemos encapsulado toda la aplicación en **contenedores**, lo que garantiza que funcione igual en cualquier máquina.
+### Now (Production with Docker)
+We have encapsulated the entire application in **containers**, ensuring it works identically on any machine.
 
-1.  **Orquestación (Docker Compose)**:
-    - Se creó un archivo `docker-compose.yml` que levanta y conecta todos los servicios automáticamente.
-    - Gestiona la red interna para que el frontend y el backend se comuniquen de forma segura.
+1.  **Orchestration (Docker Compose)**:
+    - Created a `docker-compose.yml` file that automatically starts and connects all services.
+    - Manages the internal network so the frontend and backend communicate securely.
 
 2.  **Frontend (NGINX + React)**:
-    - Ya no usamos el servidor de desarrollo de Vite.
-    - Ahora, Docker **construye** la aplicación de React (genera los archivos estáticos HTML/JS/CSS).
-    - Un servidor **NGINX** de alto rendimiento sirve estos archivos y actúa como **Proxy Inverso**.
+    - We no longer use the Vite development server.
+    - Docker now **builds** the React application (generating static HTML/JS/CSS files).
+    - A high-performance **NGINX** server serves these files and acts as a **Reverse Proxy**.
 
 3.  **Backend (FastAPI)**:
-    - Se ejecuta en su propio contenedor aislado con todas las dependencias de Python instaladas automáticamente.
-    - Solo es accesible a través de la red interna de Docker o mediante el proxy de NGINX.
+    - Runs in its own isolated container with all Python dependencies installed automatically.
+    - Only accessible through the internal Docker network or via the NGINX proxy.
 
-## 🔒 Seguridad y HTTPS
-- **NGINX como Guardián**: NGINX ahora maneja la encriptación HTTPS (puerto 443). Recibe las peticiones del usuario, desencripta el tráfico y lo envía al backend o sirve el frontend según corresponda.
-- **Certificados**: Se configuró el contenedor para usar certificados SSL (autofirmados para este entorno) de forma automática.
+## 🔒 Security and HTTPS
+- **NGINX as Guardian**: NGINX now handles HTTPS encryption (port 443). It receives user requests, decrypts traffic, and forwards it to the backend or serves the frontend as appropriate.
+- **Certificates**: The container was configured to use SSL certificates (self-signed for this environment) automatically.
 
-### 🛡️ Hardening y Protección Avanzada (NUEVO)
-Hemos implementado medidas de seguridad adicionales para proteger la infraestructura contra ataques comunes:
+### 🛡️ Hardening and Advanced Protection (NEW)
+We have implemented additional security measures to protect the infrastructure against common attacks:
 
-1.  **Protección contra DoS (Denegación de Servicio)**:
-    - **Rate Limiting**: Limitamos a 10 peticiones por segundo por IP.
-    - **Connection Limiting**: Máximo 10 conexiones simultáneas por IP.
-    - Esto evita que atacantes saturen el servidor con tráfico masivo.
+1.  **DoS Protection (Denial of Service)**:
+    - **Rate Limiting**: Limited to 10 requests per second per IP.
+    - **Connection Limiting**: Maximum 10 simultaneous connections per IP.
+    - This prevents attackers from saturating the server with massive traffic.
 
-2.  **Protección contra XSS (Cross-Site Scripting)**:
-    - Implementamos una **Content Security Policy (CSP)** estricta.
-    - Solo se permite ejecutar scripts del propio dominio y de Google (necesario para OAuth). Cualquier otro script inyectado será bloqueado por el navegador.
+2.  **XSS Protection (Cross-Site Scripting)**:
+    - Implemented a strict **Content Security Policy (CSP)**.
+    - Only scripts from the own domain and Google (required for OAuth) are allowed to execute. Any other injected script will be blocked by the browser.
 
-3.  **Protección de Infraestructura**:
-    - **Límites de Recursos**: Los contenedores tienen límites estrictos de CPU (0.5 cores) y RAM (256MB/512MB) para evitar que un proceso descontrolado congele el servidor.
-    - **Límite de Subida**: Se restringe el tamaño de archivos a 10MB para evitar saturación de disco.
+3.  **Infrastructure Protection**:
+    - **Resource Limits**: Containers have strict CPU (0.5 cores) and RAM (256MB/512MB) limits to prevent a runaway process from freezing the server.
+    - **Upload Limit**: File size is restricted to 10MB to prevent disk saturation.
 
-4.  **Cabeceras de Seguridad HTTP**:
-    - **HSTS**: Fuerza al navegador a usar siempre HTTPS.
-    - **X-Frame-Options**: Evita ataques de Clickjacking.
-    - **X-Content-Type-Options**: Evita ataques de tipo MIME.
+4.  **HTTP Security Headers**:
+    - **HSTS**: Forces the browser to always use HTTPS.
+    - **X-Frame-Options**: Prevents Clickjacking attacks.
+    - **X-Content-Type-Options**: Prevents MIME type sniffing attacks.
 
+## 🛠️ Specific Solutions Implemented
 
-## 🛠️ Soluciones Específicas Implementadas
+### Google OAuth Compatibility
+Google Login requires a specific registered "origin" (in this case, `https://localhost:3000`).
+- **Solution**: We configured Docker to listen on port **3000** (in addition to standard ports 80/443) and redirect it internally to the secure service. This allows Google login to continue working without changing the configuration in the Google Cloud console.
 
-### Compatibilidad con Google OAuth
-Google Login requiere una "origen" específico registrado (en este caso, `https://localhost:3000`).
-- **Solución**: Configuramos Docker para que, además de los puertos estándar (80/443), también escuche en el puerto **3000** y lo redirija internamente al servicio seguro. Esto permite que el login de Google siga funcionando sin cambiar la configuración en la consola de Google Cloud.
+### Git History Cleanup
+During the process, credentials were accidentally introduced into the version history.
+- **Solution**: The Git history was rewritten (`git reset` and `git commit --amend`) to remove any trace of secret keys before pushing changes to the remote repository, ensuring project security.
 
-### Limpieza de Historial Git
-Durante el proceso, se introdujeron accidentalmente credenciales en el historial de versiones.
-- **Solución**: Se reescribió el historial de Git (`git reset` y `git commit --amend`) para eliminar cualquier rastro de las claves secretas antes de subir los cambios al repositorio remoto, garantizando la seguridad del proyecto.
+## 🐛 Problems Found and Solved
 
-## 🚀 Beneficios Obtenidos
-- **Portabilidad Total**: Ahora puedes llevar el proyecto a cualquier ordenador con Docker instalado y funcionará con un solo comando (`docker compose up`).
-- **Entorno Limpio**: No es necesario instalar Node.js, Python o bases de datos en la máquina anfitriona; todo vive dentro de Docker.
-- **Persistencia**: Los datos de la base de datos se guardan en volúmenes de Docker, por lo que no se pierden al reiniciar los contenedores (a menos que se solicite explícitamente).
+### 1. Image Persistence (Error 500)
+- **Problem**: Uploaded images disappeared when restarting the container because they were saved in a temporary folder (`/app/uploads`). The database kept the reference, but the physical file no longer existed, causing 500 errors.
+- **Solution**:
+    - Configured a persistent volume in Docker for `/data`.
+    - Modified the backend to save images in `/data/uploads`.
+    - Now files survive container restarts and updates.
+
+### 2. Preview Blocking (CSP vs Blob)
+- **Problem**: The security policy (CSP) was so strict that it blocked `blob:` URLs that the frontend uses to preview images before uploading.
+- **Solution**: Adjusted the `img-src` directive in NGINX to explicitly allow `blob:`.
+
+### 3. Google Logo Blocked
+- **Problem**: The "Sign in with Google" logo was not loading. The CSP blocked loading from `developers.google.com`, and adding external exceptions complicated security.
+- **Solution**:
+    - Downloaded the official logo and saved it locally in `frontend/src/assets/`.
+    - Updated the Login component to serve the image from the server itself.
+    - This improves speed, privacy, and eliminates unnecessary external dependencies.
+
+## 🚀 Benefits Achieved
+- **Total Portability**: You can now take the project to any computer with Docker installed, and it will work with a single command (`docker compose up`).
+- **Clean Environment**: No need to install Node.js, Python, or databases on the host machine; everything lives inside Docker.
+- **Persistence**: Database data is saved in Docker volumes, so it is not lost when restarting containers (unless explicitly requested).
