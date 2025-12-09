@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authService } from '../services/api';
 import { useGoogleLogin } from '@react-oauth/google';
+import googleLogo from '../assets/google-logo.png';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -93,7 +94,7 @@ function Login() {
             }}
           >
             <img
-              src="https://developers.google.com/identity/images/g-logo.png"
+              src={googleLogo}
               alt="Google logo"
               style={{ width: '18px', height: '18px' }}
             />

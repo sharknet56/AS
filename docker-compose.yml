@@ -8,8 +8,14 @@ services:
     env_file: .env
     environment:
       - DATABASE_URL=sqlite:////data/app.db
+      - UPLOAD_DIR=/data/uploads
     volumes:
       - backend_data:/data
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
     networks:
       - app-network
 
@@ -23,6 +29,11 @@ services:
       - "3000:443"
     volumes:
       - ./certs/nginx:/etc/nginx/certs:ro
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
     depends_on:
       - backend
     networks:

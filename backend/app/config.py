@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     SSL_FRONTEND_CERT_PATH: Optional[str] = None
     SSL_FRONTEND_KEY_PATH: Optional[str] = None
     SSL_CA_CERT_PATH: Optional[str] = None
+    UPLOAD_DIR: str = "uploads"
 
     class Config:
         env_file = ".env"

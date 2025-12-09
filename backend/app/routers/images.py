@@ -9,8 +9,10 @@ from app.models import User, Image
 from app.schemas import Image as ImageSchema, ImageCreate, ImageUpdate, ImageWithComments
 from app.dependencies import get_current_user
 from app.encryption import save_encrypted_file, read_and_decrypt_file, delete_encrypted_file
+from app.config import get_settings
 
 router = APIRouter()
+settings = get_settings()
 
 @router.post("/", response_model=ImageSchema, status_code=status.HTTP_201_CREATED)
 async def create_image(
@@ -38,7 +40,7 @@ async def create_image(
     unique_filename = f"{uuid.uuid4()}_{file.filename}"
     
     # Encrypt and save file
-    encrypted_path = save_encrypted_file(file_content, unique_filename)
+    encrypted_path = save_encrypted_file(file_content, unique_filename, upload_dir=settings.UPLOAD_DIR)
     
     # Create database entry
     db_image = Image(
