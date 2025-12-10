@@ -36,7 +36,7 @@ https://www.docker.com/products/docker-desktop/
 Then open the Docker Desktop app.
 
 # For Ubuntu
-Ensure `docker.io` and `docker-compose-plugin` is installed on your system.
+Ensure `docker` and `docker-compose-plugin` is installed on your system.
 
 To install `docker-compose-plugin` follow the official tutorial or just run the commands.
 
