@@ -27,10 +27,17 @@ The application has been configured and tested in the following environment:
 ## Usage
 
 ### Prerequisites
+# For Windows
+Ensure `wsl` is installed on your system.
+
+Download Docker Desktop at the official webpage:
+https://www.docker.com/products/docker-desktop/
+
+Then open the Docker Desktop app.
+
+# For Ubuntu
 Ensure `docker.io` and `docker-compose-plugin` is installed on your system.
-```bash
-sudo apt install docker.io
-```
+
 To install `docker-compose-plugin` follow the official tutorial or just run the commands.
 
 Ubuntu tutorial:
@@ -58,6 +65,7 @@ sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin dock
 
 sudo systemctl start docker
 ```
+
 
 ### Execution
 
