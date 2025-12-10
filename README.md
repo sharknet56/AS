@@ -42,6 +42,15 @@ Run the following commands in the project root directory:
 docker compose up -d --build
 ```
 
+### Accessing the Application
+
+Once the application is running, open your browser and navigate to:
+**https://localhost:3000**
+
+> **Note:** If you cannot connect, ensure that port 3000 is not being used by another application.
+
+**Important:** To avoid security warnings, you must import the CA certificate located at `certs/ca/cacert.pem` into your browser's trusted authorities.
+
 **Stop the application:**
 
 ```bash
